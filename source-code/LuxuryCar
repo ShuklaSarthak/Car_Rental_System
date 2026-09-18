@@ -1,0 +1,27 @@
+public class LuxuryCar extends Car {
+
+    private double luxuryCharge;
+
+    public LuxuryCar(String carId, String brand, String model,
+                     double pricePerDay, double luxuryCharge) {
+
+        super(carId, brand, model, "Luxury", pricePerDay);
+
+        this.luxuryCharge = luxuryCharge;
+    }
+
+    // total per day price = normal price + luxury charge
+    @Override
+    public double getPricePerDay() {
+        return super.getPricePerDay() + luxuryCharge;
+    }
+
+    @Override
+    public void displayCar() {
+        System.out.println(
+                getCarId() + " | " +
+                getBrand() + " " + getModel() +
+                " | Luxury | Rs. " + getPricePerDay() + "/day"
+        );
+    }
+}
