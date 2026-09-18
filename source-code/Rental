@@ -1,0 +1,56 @@
+public class Rental {
+
+    private String rentalId;
+    private Customer customer;
+    private Car car;
+    private int days;
+    private boolean returned;
+
+    public Rental(String rentalId, Customer customer, Car car, int days) {
+        this.rentalId = rentalId;
+        this.customer = customer;
+        this.car = car;
+        this.days = days;
+        this.returned = false; // not returned yet when created
+    }
+
+    public String getRentalId() {
+        return rentalId;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public Car getCar() {
+        return car;
+    }
+
+    public int getDays() {
+        return days;
+    }
+
+    public boolean isReturned() {
+        return returned;
+    }
+
+    public void setReturned(boolean returned) {
+        this.returned = returned;
+    }
+
+    // simple calculation, no discounts or late fees for now
+    public double getTotalAmount() {
+        return car.getPricePerDay() * days;
+    }
+
+    public void displayRental() {
+        System.out.println(
+                "Rental ID: " + rentalId +
+                " | Customer: " + customer.getName() +
+                " | Car: " + car.getBrand() + " " + car.getModel() +
+                " | Days: " + days +
+                " | Amount: Rs. " + getTotalAmount() +
+                " | " + (returned ? "Returned" : "Active")
+        );
+    }
+}
