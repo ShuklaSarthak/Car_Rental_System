@@ -1,0 +1,229 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class CarRental {
+
+    ArrayList<Car> cars = new ArrayList<>();
+    ArrayList<Rental> rentals = new ArrayList<>();
+
+    Scanner sc = new Scanner(System.in);
+
+    public CarRental() {
+
+        cars.add(new Car("C101", "Maruti", "Swift", "Hatchback", 1500));
+        cars.add(new Car("C102", "Hyundai", "Creta", "SUV", 2500));
+        cars.add(new Car("C103", "Toyota", "Fortuner", "SUV", 4000));
+        cars.add(new LuxuryCar("C104", "BMW", "5 Series", 7000, 1500));
+    }
+
+    public void start() {
+
+        int choice;
+
+        do {
+            System.out.println("\n================================");
+            System.out.println("       CAR RENTAL SYSTEM");
+            System.out.println("================================");
+            System.out.println("1. Add Car");
+            System.out.println("2. View Available Cars");
+            System.out.println("3. Rent Car");
+            System.out.println("4. Return Car");
+            System.out.println("5. Rental History");
+            System.out.println("0. Exit");
+            System.out.println("================================");
+
+            System.out.print("Enter your choice: ");
+            choice = sc.nextInt();
+            sc.nextLine();
+
+            switch (choice) {
+
+                case 1:
+                    addCar();
+                    break;
+
+                case 2:
+                    showCars();
+                    break;
+
+                case 3:
+                    rentCar();
+                    break;
+
+                case 4:
+                    returnCar();
+                    break;
+
+                case 5:
+                    showHistory();
+                    break;
+
+                case 0:
+                    System.out.println("Thank you for using Car Rental System!");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice!");
+            }
+
+        } while (choice != 0);
+    }
+
+    // show only the cars that are not rented out right now
+    public void showCars() {
+
+        System.out.println("\n----- AVAILABLE CARS -----");
+
+        boolean found = false;
+
+        for (Car car : cars) {
+            if (car.isAvailable()) {
+                car.displayCar();
+                found = true;
+            }
+        }
+
+        if (!found) {
+            System.out.println("No cars available.");
+        }
+    }
+
+    public void addCar() {
+
+        System.out.println("\n----- ADD CAR -----");
+
+        System.out.print("Car ID: ");
+        String id = sc.nextLine();
+
+        System.out.print("Brand: ");
+        String brand = sc.nextLine();
+
+        System.out.print("Model: ");
+        String model = sc.nextLine();
+
+        System.out.print("Price per day: ");
+        double price = sc.nextDouble();
+
+        System.out.println("\n1. Normal Car");
+        System.out.println("2. Luxury Car");
+
+        System.out.print("Choose type: ");
+        int type = sc.nextInt();
+
+        if (type == 1) {
+
+            cars.add(new Car(id, brand, model, "Normal", price));
+
+        } else if (type == 2) {
+
+            System.out.print("Luxury charge per day: ");
+            double charge = sc.nextDouble();
+
+            cars.add(new LuxuryCar(id, brand, model, price, charge));
+
+        } else {
+
+            System.out.println("Invalid car type.");
+            sc.nextLine();
+            return;
+        }
+
+        sc.nextLine();
+
+        System.out.println("Car added successfully!");
+    }
+
+    public void rentCar() {
+
+        System.out.println("\n----- RENT CAR -----");
+
+        System.out.print("Enter Car ID: ");
+        String id = sc.nextLine();
+
+        Car car = findCar(id);
+
+        if (car == null) {
+            System.out.println("Car not found!");
+            return;
+        }
+
+        if (!car.isAvailable()) {
+            System.out.println("Car is already rented!");
+            return;
+        }
+
+        System.out.print("Customer name: ");
+        String name = sc.nextLine();
+
+        System.out.print("Phone number: ");
+        String phone = sc.nextLine();
+
+        System.out.print("Number of days: ");
+        int days = sc.nextInt();
+        sc.nextLine();
+
+        if (days <= 0) {
+            System.out.println("Days must be greater than 0.");
+            return;
+        }
+
+        // simple id generation based on how many rentals exist so far
+        Customer customer = new Customer("CU" + (rentals.size() + 1), name, phone);
+        Rental rental = new Rental("R" + (rentals.size() + 1), customer, car, days);
+
+        rentals.add(rental);
+        car.setAvailable(false);
+
+        System.out.println("\nCar rented successfully!");
+        System.out.println("Customer ID: " + customer.getCustomerId());
+        System.out.println("Rental ID: " + rental.getRentalId());
+        System.out.println("Total Amount: Rs. " + rental.getTotalAmount());
+    }
+
+    public void returnCar() {
+
+        System.out.println("\n----- RETURN CAR -----");
+
+        System.out.print("Enter Rental ID: ");
+        String id = sc.nextLine();
+
+        for (Rental rental : rentals) {
+
+            if (rental.getRentalId().equalsIgnoreCase(id) && !rental.isReturned()) {
+
+                rental.setReturned(true);
+                rental.getCar().setAvailable(true);
+
+                System.out.println("Car returned successfully!");
+                return;
+            }
+        }
+
+        System.out.println("Rental not found!");
+    }
+
+    public void showHistory() {
+
+        System.out.println("\n----- RENTAL HISTORY -----");
+
+        if (rentals.isEmpty()) {
+            System.out.println("No rentals yet.");
+            return;
+        }
+
+        for (Rental rental : rentals) {
+            rental.displayRental();
+        }
+    }
+
+    private Car findCar(String id) {
+
+        for (Car car : cars) {
+            if (car.getCarId().equalsIgnoreCase(id)) {
+                return car;
+            }
+        }
+
+        return null;
+    }
+}
